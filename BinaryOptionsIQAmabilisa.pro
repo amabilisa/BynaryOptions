@@ -33,5 +33,4 @@ HEADERS += \
     chartdatalocalservice.h \
     abstractchartdataservice.h
 
-FORMS += \
-        mainwindow.ui
+FORMS +=

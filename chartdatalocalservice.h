@@ -11,15 +11,25 @@ class ChartDataLocalService: public AbstractChartDataService
     Q_OBJECT
 public:
     ChartDataLocalService(int startValue, int deviation);
-    void getChartData();
+
+    //genarator timer start
+    void srartRequestData();
+
+    //returns minimum of data interval
+    int getDataMinimum() const;
+
+    //returns maximum of data interval
+    int getDataMaximum() const;
 
 private slots:
     void getNextValue();
 
 private:
     QTimer *_timer;
-    int _startValue;
+    int _previousValue;
     int _deviation;
+    int _dataMinimum;
+    int _dataMaximum;
     double getNormalizedRandom();
 };
 
