@@ -5,12 +5,20 @@
 
 #include <QLineSeries>
 #include <QChart>
-#include <QChartView>
 #include <QDateTime>
+
+#include <QChartView>
 #include <QDateTimeAxis>
 #include <QValueAxis>
 
+#include <QPushButton>
+#include <QLabel>
+#include <QComboBox>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+
 #include "chartdatalocalservice.h"
+#include "dealsprovider.h"
 
 QT_CHARTS_USE_NAMESPACE
 
@@ -30,7 +38,14 @@ private:
     QValueAxis *axisY;
     QLineSeries *series;
 
+    DealsProvider *dealsProvider;
     AbstractChartDataService *chartDataModel;
+
+    QLabel *balanceLabel;
+    QComboBox *priceOfDealCombo;
+    QPushButton *dealUpButton;
+    QPushButton *dealDownButton;
+
 
 private slots:
     void onTakeNewValue(double data, QDateTime dateTime);

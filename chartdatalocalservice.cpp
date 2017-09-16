@@ -1,7 +1,7 @@
 #include "chartdatalocalservice.h"
 
 ChartDataLocalService::ChartDataLocalService(int startValue, int deviation):AbstractChartDataService(),
-  _previousValue(startValue), _dataMinimum(startValue), _dataMaximum(startValue), _deviation(deviation)
+  _lastDataValue(startValue), _dataMinimum(startValue), _dataMaximum(startValue), _deviation(deviation)
 {
 
     _timer = new QTimer();
@@ -16,20 +16,25 @@ void ChartDataLocalService::srartRequestData()
 
 void ChartDataLocalService::getNextValue()
 {
-    _previousValue = _previousValue + 2 * _deviation * (getNormalizedRandom() - 0.5);
-    _dataMinimum = _dataMinimum < _previousValue ? _dataMinimum : _previousValue;
-    _dataMaximum = _dataMaximum > _previousValue ? _dataMaximum : _previousValue;
-    emit haveNewData(_previousValue, QDateTime::currentDateTime());
+    _lastDataValue = _lastDataValue + 2 * _deviation * (getNormalizedRandom() - 0.5);
+    _dataMinimum = _dataMinimum < _lastDataValue ? _dataMinimum : _lastDataValue;
+    _dataMaximum = _dataMaximum > _lastDataValue ? _dataMaximum : _lastDataValue;
+    emit haveNewData(_lastDataValue, QDateTime::currentDateTime());
 }
 
-int ChartDataLocalService::getDataMaximum() const
+qreal ChartDataLocalService::getLastDataValue() const
 {
-    return _dataMaximum;
+    return (qreal)_lastDataValue;
 }
 
-int ChartDataLocalService::getDataMinimum() const
+qreal ChartDataLocalService::getDataMaximum() const
 {
-    return _dataMinimum;
+    return (qreal)_dataMaximum;
+}
+
+qreal ChartDataLocalService::getDataMinimum() const
+{
+    return (qreal)_dataMinimum;
 }
 
 double ChartDataLocalService::getNormalizedRandom()

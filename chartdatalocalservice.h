@@ -16,17 +16,19 @@ public:
     void srartRequestData();
 
     //returns minimum of data interval
-    int getDataMinimum() const;
+    qreal getDataMinimum() const;
 
     //returns maximum of data interval
-    int getDataMaximum() const;
+    qreal getDataMaximum() const;
+
+    qreal getLastDataValue() const;
 
 private slots:
     void getNextValue();
 
 private:
     QTimer *_timer;
-    int _previousValue;
+    int _lastDataValue;
     int _deviation;
     int _dataMinimum;
     int _dataMaximum;

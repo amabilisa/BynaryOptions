@@ -1,0 +1,36 @@
+QWidget {
+    font-size: 20px;
+    font-family: "PT Sans", sans-serif;
+    background-color: transparent;
+    border: none;
+}
+
+
+#mainWindow, #chartView, #chartView.QChart {
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 #2e303a, stop: 1 #121218);
+}
+
+#chartView {
+	margin: 0px;
+	padding: 0px;
+}
+
+
+QPushButton {
+	border-radius: 5px;
+	color: white;
+}
+
+
+#dealUpButton {
+	background-color: #3eac6d;
+	height: 60px;
+	width: 120px;
+}
+
+#dealDownButton {
+	background-color: #c64743/*db403b*/;
+	height: 60px;
+	width: 120px;
+}

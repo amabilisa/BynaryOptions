@@ -26,11 +26,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    chartdatalocalservice.cpp
+    chartdatalocalservice.cpp \
+    dealsprovider.cpp
 
 HEADERS += \
         mainwindow.h \
     chartdatalocalservice.h \
-    abstractchartdataservice.h
+    abstractchartdataservice.h \
+    dealsprovider.h
 
 FORMS +=
+
+RESOURCES += \
+    resources.qrc
