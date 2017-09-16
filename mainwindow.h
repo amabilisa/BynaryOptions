@@ -14,9 +14,7 @@
 
 QT_CHARTS_USE_NAMESPACE
 
-namespace Ui {
-class MainWindow;
-}
+#define SECONDS_TO_SHOW_ON_PLOT 180
 
 class MainWindow : public QMainWindow
 {
@@ -27,7 +25,6 @@ public:
     ~MainWindow();
 
 private:
-//    Ui::MainWindow *ui;
     QChart *chart;
     QDateTimeAxis *axisX;
     QValueAxis *axisY;

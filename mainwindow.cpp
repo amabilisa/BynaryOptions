@@ -1,49 +1,29 @@
 #include "mainwindow.h"
-//#include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent)/*,
-    ui(new Ui::MainWindow)*/
+    QMainWindow(parent)
 {
-//    ui->setupUi(this);
-
-
 
     series = new QLineSeries();
-
-//    QDateTime dateTime = QDateTime::currentDateTime();
-
-
-//    series->append(dateTime.toMSecsSinceEpoch(), 100);
-//    dateTime = dateTime.addSecs(1);
-//    series->append(dateTime.toMSecsSinceEpoch(), 120);
-//    dateTime = dateTime.addSecs(1);
-//    series->append(dateTime.toMSecsSinceEpoch(), 90);
-//    dateTime = dateTime.addSecs(1);
-//    series->append(dateTime.toMSecsSinceEpoch(), 88);
-//    dateTime = dateTime.addSecs(1);
-//    series->append(dateTime.toMSecsSinceEpoch(), 103);
-//    *series << QPointF(11, 1) << QPointF(13, 3) << QPointF(17, 6) << QPointF(18, 3) << QPointF(20, 2);
 
     chart = new QChart();
     chart->legend()->hide();
     chart->addSeries(series);
-    chart->setTitle("Simple line chart example");
+    chart->setTitle("Current trading active: random");
     chart->setTheme(QChart::ChartThemeDark);
 
     axisX = new QDateTimeAxis;
     axisX->setTickCount(15);
     axisX->setFormat("mm:ss");
-    axisX->setTitleText("Date");
+    axisX->setTitleText("Time");
 
     chart->addAxis(axisX, Qt::AlignBottom);
     series->attachAxis(axisX);
 
     axisY = new QValueAxis;
     axisY->setLabelFormat("%i");
-    axisY->setTitleText("Sunspots count");
-//    axisY->setTickCount(axisX->tickCount());
-//    axisY->setRange(60, 140);
+    axisY->setTitleText("Current price");
+    axisY->setTickCount(axisX->tickCount() / 2);
     chart->addAxis(axisY, Qt::AlignLeft);
     series->attachAxis(axisY);
 
@@ -61,7 +41,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-//    delete ui;
 }
 
 void MainWindow::onTakeNewValue(double data, QDateTime dateTime)
@@ -69,15 +48,10 @@ void MainWindow::onTakeNewValue(double data, QDateTime dateTime)
 
     qDebug() << "onTakeNewValue" << data << dateTime << dateTime.toMSecsSinceEpoch();
 
-//    axisX->setRange(dateTime, dateTime.addSecs(axisX->tickCount()));
-
-
     series->append(dateTime.toMSecsSinceEpoch(), data);
-    axisX->setRange(dateTime, dateTime.addSecs(120));
+    axisX->setRange(dateTime, dateTime.addSecs(SECONDS_TO_SHOW_ON_PLOT));
     axisY->setRange(chartDataModel->getDataMinimum(), chartDataModel->getDataMaximum());
-    qreal x = chart->plotArea().width() / 2;// / axisX->tickCount();
-//    x = 100;
+    qreal x = chart->plotArea().width() / 2;
 
-//    qDebug() << "x:" << x;
     chart->scroll(-x, 0);
 }
