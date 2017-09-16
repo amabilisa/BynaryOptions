@@ -9,7 +9,7 @@ enum DealType {
 };
 
 struct Deal {
-    qreal quote;
+    double quote;
     int price;
     DealType dealType;
 };
@@ -25,15 +25,15 @@ public:
 
     void addDeal(Deal deal);
 
-    qreal balance() const;
-    void setBalance(const qreal &balance);
+    double getBalance() const;
+    void setBalance(const double &getBalance);
 
 signals:
 
 public slots:
 
 private:
-    qreal _balance;
+    double _balance;
     int _expirationTime;
     QList <Deal> _deals;
 

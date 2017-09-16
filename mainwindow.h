@@ -17,6 +17,7 @@
 #include <QLineEdit>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <QSettings>
 
 #include "chartdatalocalservice.h"
 #include "dealsprovider.h"
@@ -34,6 +35,8 @@ public:
     ~MainWindow();
 
 private:
+    QSettings *settings;
+
     QChart *chart;
     QDateTimeAxis *axisX;
     QValueAxis *axisY;

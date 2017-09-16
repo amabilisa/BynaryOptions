@@ -3,6 +3,7 @@
 DealsProvider::DealsProvider(QObject *parent) : QObject(parent)
 {
     _expirationTime = 10 /*seconds*/;
+    _balance = 1000;
 }
 
 int DealsProvider::expirationTime() const
@@ -20,12 +21,12 @@ void DealsProvider::addDeal(Deal deal)
     _deals << deal;
 }
 
-qreal DealsProvider::balance() const
+double DealsProvider::getBalance() const
 {
     return _balance;
 }
 
-void DealsProvider::setBalance(const qreal &balance)
+void DealsProvider::setBalance(const double &balance)
 {
     _balance = balance;
 }

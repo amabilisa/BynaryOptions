@@ -1,4 +1,3 @@
-#include <QSettings>
 #include <QStyledItemDelegate>
 #include <QIntValidator>
 
@@ -11,9 +10,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     setObjectName("mainWindow");
 
-    QSettings *settings = new QSettings("settings.conf", QSettings::NativeFormat);
+
 
     dealsProvider = new DealsProvider;
+
+    settings = new QSettings("settings.conf", QSettings::NativeFormat);
+    dealsProvider->setBalance(settings->value("balance/current_balance").toDouble());
 
     series = new QLineSeries();
 
@@ -52,7 +54,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QLabel *nameOfBalanceLabel = new QLabel(tr("Счёт:"));
 
-    balanceLabel = new QLabel("1000$");
+    balanceLabel = new QLabel;
+    balanceLabel->setText(getDollarsString(dealsProvider->getBalance()));
     balanceLabel->setObjectName("balanceLabel");
 
     QHBoxLayout *balanceLabelsLO = new QHBoxLayout;
@@ -117,6 +120,7 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete dealsProvider;
+    delete settings;
     delete series;
     delete chartDataModel;
 }
@@ -130,6 +134,13 @@ void MainWindow::onTakeNewValue(double data, QDateTime dateTime)
     axisX->setRange(dateTime, dateTime.addSecs(SECONDS_TO_SHOW_ON_PLOT));
     axisY->setRange(chartDataModel->getDataMinimum(), chartDataModel->getDataMaximum());
     qreal x = chart->plotArea().width() / 2;
+
+    dealsProvider->setBalance(dealsProvider->getBalance() + data);
+    settings->setValue("balance/current_balance", dealsProvider->getBalance());
+    settings->sync();
+    balanceLabel->setText(getDollarsString(dealsProvider->getBalance()));
+
+    qDebug() << "current balance:" << settings->value("balance/current_balance").toDouble();
 
     chart->scroll(-x, 0);
 }

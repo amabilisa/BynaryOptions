@@ -27,3 +27,10 @@ void fixComboBoxDropDownListSizeAdjustment(QComboBox *cb)
         cb->setMinimumWidth(cb->maximumWidth());
     }
 }
+
+
+
+QString getDollarsString(double value)
+{
+    return QString(QString::number(value) + "$");
+}
