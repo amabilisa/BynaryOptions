@@ -1,8 +1,9 @@
 QWidget {
-    font-size: 20px;
+    font-size: 14px;
     font-family: "PT Sans", sans-serif;
     background-color: transparent;
     border: none;
+    color: #ccc;
 }
 
 
@@ -11,14 +12,53 @@ QWidget {
                                 stop: 0 #2e303a, stop: 1 #121218);
 }
 
-#chartView {
-	margin: 0px;
-	padding: 0px;
+#balanceLabel {
+	color: #dbc430;
+	font-size: 25px;
+	text-align: right;
+}
+
+QComboBox, QComboBox:editable {
+	text-align: right;
+	font-size: 18px;
+}
+
+QComboBox::down-arrow {
+    image: url(:/icons/icons/angle-down_16.png);
+}
+
+QComboBox::drop-down {
+	border: none;
 }
 
 
+QComboBox QAbstractItemView {
+    selection-background-color: #3eac6d;
+    border: none;
+    outline: 0;
+}
+
+QComboBox QAbstractItemView::item {
+    border-bottom: 1px solid #434343;
+    min-height: 20px;
+    margin: 3px;
+    background-color: transparent;
+}
+
+QComboBox QAbstractItemView::item:hover, QComboBox QAbstractItemView::item:selected {
+    background-color: #3eac6d;
+    /*color: #333;*/
+    border: none;
+ }
+
+QComboBox QAbstractItemView::item:focus {
+	background-color: transparent;;
+    border: 0px;
+ }
+
 QPushButton {
 	border-radius: 5px;
+	font-size: 20px;
 	color: white;
 }
 

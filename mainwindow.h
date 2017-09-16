@@ -14,6 +14,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QComboBox>
+#include <QLineEdit>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 

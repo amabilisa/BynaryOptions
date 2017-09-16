@@ -27,13 +27,15 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     chartdatalocalservice.cpp \
-    dealsprovider.cpp
+    dealsprovider.cpp \
+    tools.cpp
 
 HEADERS += \
         mainwindow.h \
     chartdatalocalservice.h \
     abstractchartdataservice.h \
-    dealsprovider.h
+    dealsprovider.h \
+    tools.h
 
 FORMS +=
 

@@ -2,5 +2,7 @@
     <qresource prefix="/styles">
         <file>style_dark.qss</file>
     </qresource>
-    <qresource prefix="/icons"/>
+    <qresource prefix="/icons">
+        <file>icons/angle-down_16.png</file>
+    </qresource>
 </RCC>
