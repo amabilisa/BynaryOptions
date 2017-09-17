@@ -12,6 +12,12 @@ QWidget {
                                 stop: 0 #2e303a, stop: 1 #121218);
 }
 
+#messageForUser {
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 #2a2a2f, stop: 1 #313139);
+	font-size: 16px;
+}
+
 #balanceLabel {
 	color: #dbc430;
 	font-size: 25px;

@@ -9,13 +9,13 @@ DealsProvider::DealsProvider(MainWindow *mainWindow, QObject *parent) : QObject(
 {
     _expirationTimeFrame = 60 /*seconds*/;
 
-    _settings = new QSettings("bynarysettings.conf", QSettings::NativeFormat);
+    _settings = new QSettings("bynarysettingsconfig1.conf", QSettings::NativeFormat);
 
-//    if (_settings->value("balance/current_balance", -1).toDouble() < 0) {
+    if (_settings->value("balance/current_balance", -1).toDouble() < 0) {
         this->setBalance(1000 * 100);
-//    } else {
-//        this->setBalance(_settings->value("balance/current_balance").toDouble());
-//    }
+    } else {
+        this->setBalance(_settings->value("balance/current_balance").toInt());
+    }
 
     _oneExpirationIntervalTimer = new QTimer();
     _oneExpirationIntervalTimer->setSingleShot(true);
@@ -44,11 +44,6 @@ void DealsProvider::setExpirationTimeFrame(int expirationTimeFrame)
 
     qint64 timerDelay = QDateTime::fromMSecsSinceEpoch(currentTimeInMSeconds).msecsTo(expirationTime);
 
-    qDebug() << "current:" << QDateTime::fromMSecsSinceEpoch(currentTimeInMSeconds);
-    qDebug() << "expiration:" << expirationTime;
-
-    qDebug() << "timer delay:" << timerDelay << "seconds:" << timerDelay/1000;
-
     _oneExpirationIntervalTimer->start(timerDelay);
 }
 
@@ -65,8 +60,6 @@ void DealsProvider::addDeal(QDateTime dateTimeOFDeal, Deal *deal)
 
         _activeDeals.insert(dateTimeOFDeal, deal);
 
-        qDebug() << "deal added:" << deal->_price << dateTimeOFDeal;
-        qDebug() << "time of end:" << deal->_expirationTime;
     }
 }
 
@@ -79,15 +72,12 @@ double DealsProvider::getBalance() const
 void DealsProvider::setBalance(const double &balance)
 {
     _balance = balance;
-//    _settings->setValue("balance/current_balance", this->getBalance());
-//    _settings->sync();
-
-    emit needChangeBalance(balance);
+    _settings->setValue("balance/current_balance", this->getBalance());
+    _settings->sync();
 }
 
 void DealsProvider::checkActiveDeals()
 {
-    qDebug() << ">>>>>>>> expiration timer shot <<<<<<<<" << QDateTime::currentDateTime();
     if (_oneExpirationIntervalTimer->isSingleShot()) {
         _oneExpirationIntervalTimer->setSingleShot(false);
         _oneExpirationIntervalTimer->start(_expirationTimeFrame * 1000);
@@ -95,35 +85,45 @@ void DealsProvider::checkActiveDeals()
 
     qreal lastChartValue = _mainWindow->getChartDataModel()->getLastDataValue();
 
-    if (_activeDeals.isEmpty())
-        emit needMoreDeals();
+    int moneyWon = 0;
 
-    foreach (auto deal, _activeDeals) {
-//        qDebug() << "deal:" << _activeDeals.value(dateTimeOfDeal)->_expirationTime;
+    foreach (auto dealTime, _activeDeals.keys()) {
+        Deal *deal = _activeDeals.value(dealTime);
         if (abs(deal->_expirationTime.secsTo(QDateTime::currentDateTime())) < 1) {
 
             switch (deal->_dealType) {
             case DealUp:
                 if (lastChartValue > deal->_quote) {
-                    deal->_won = deal->_price * 0.8;
-
-                    _hystoryOfDeals.insert(_activeDeals.key(deal), deal);
-                    _activeDeals.remove(_activeDeals.key(deal));
-
-                    this->setBalance(_balance += deal->_won);
+                    deal->_won = deal->_price * 1.8;
                 }
                 break;
             case DealDown:
                 if (lastChartValue < deal->_quote) {
-                    deal->_won = deal->_price * 0.8;
-
-                    _hystoryOfDeals.insert(_activeDeals.key(deal), deal);
-                    _activeDeals.remove(_activeDeals.key(deal));
-
-                    this->setBalance(_balance += deal->_won);
+                    deal->_won = deal->_price * 1.8;
                 }
                 break;
+
             }
+
+            moneyWon += deal->_won;
+
+            _hystoryOfDeals.insert(dealTime, deal);
+            _activeDeals.remove(dealTime);
+
+//            qDebug() << "deals:" << dealTime << _hystoryOfDeals.count() << _activeDeals.count();
+        }
+    }
+
+    if (moneyWon > 0) {
+        this->setBalance(_balance += moneyWon);
+         emit needChangeBalance(moneyWon);
+    } else {
+        if (_activeDeals.isEmpty()) {
+            qDebug() << "!!!!!!!needMoreDeals!!!!!";
+            emit needMoreDeals();
+        } else {
+            qDebug() << "------needChangeBalance(0)-----" << _activeDeals.count();
+            emit needChangeBalance(0);
         }
     }
 }

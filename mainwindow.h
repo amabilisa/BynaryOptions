@@ -20,6 +20,7 @@
 
 #include "chartdatalocalservice.h"
 #include "dealsprovider.h"
+#include "binaryoptionsmessagebox.h"
 
 QT_CHARTS_USE_NAMESPACE
 
@@ -35,6 +36,9 @@ public:
 
     AbstractChartDataService *getChartDataModel() const;
 
+protected:
+    void showEvent(QShowEvent* event);
+
 private:
     QChart *chart;
     QDateTimeAxis *axisX;
@@ -48,6 +52,9 @@ private:
     QComboBox *priceOfDealCombo;
     QPushButton *dealUpButton;
     QPushButton *dealDownButton;
+
+    BinaryOptionsMessageBox messageForUser;
+    QWidget *mainWidget;
 
     double _currentData;
 

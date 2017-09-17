@@ -1,5 +1,6 @@
 #include <QStyledItemDelegate>
 #include <QIntValidator>
+#include <QPoint>
 
 #include "mainwindow.h"
 #include "tools.h"
@@ -9,6 +10,11 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 
     setObjectName("mainWindow");
+
+    messageForUser.setWindowFlag(Qt::Popup);
+    messageForUser.setWindowFlag(Qt::FramelessWindowHint);
+    messageForUser.setModal(false);
+    messageForUser.setObjectName("messageForUser");
 
     dealsProvider = new DealsProvider(this);
 
@@ -98,7 +104,7 @@ MainWindow::MainWindow(QWidget *parent) :
     rightMenuLO->setSpacing(13);
 
     QHBoxLayout *mainLO = new QHBoxLayout;
-    QWidget *mainWidget =  new QWidget;
+    mainWidget =  new QWidget;
 
     mainLO->addWidget(chartView, 10);
     mainLO->addLayout(rightMenuLO, 1);
@@ -130,6 +136,13 @@ AbstractChartDataService *MainWindow::getChartDataModel() const
     return chartDataModel;
 }
 
+void MainWindow::showEvent(QShowEvent *event)
+{
+    messageForUser.move(mapToGlobal( mainWidget->rect().topLeft()) );
+    QMainWindow::showEvent(event);
+}
+
+
 void MainWindow::onTakeNewValue(double data, QDateTime dateTime)
 {
 
@@ -147,14 +160,14 @@ void MainWindow::onTakeNewValue(double data, QDateTime dateTime)
 
 void MainWindow::onGetDealUp()
 {
-    int price = priceOfDealCombo->currentText().split("$").first().toInt() * 100;
+    int price = priceOfDealCombo->currentText().toInt() * 100;
     dealsProvider->setBalance(dealsProvider->getBalance() - price);
     dealsProvider->addDeal(QDateTime::currentDateTime(), new Deal(_currentData, price, DealUp));
 }
 
 void MainWindow::onGetDealDown()
 {
-    int price = priceOfDealCombo->currentText().split("$").first().toInt() * 100;
+    int price = priceOfDealCombo->currentText().toInt() * 100;
     dealsProvider->setBalance(dealsProvider->getBalance() - price);
     dealsProvider->addDeal(QDateTime::currentDateTime(), new Deal(_currentData, price, DealDown));
 }
@@ -163,10 +176,16 @@ void MainWindow::onChangeBalance(int addToBalance)
 {
     if (addToBalance > 0) {
         balanceLabel->setText(getDollarsString(dealsProvider->getBalance()));
+        messageForUser.setText(tr("Ваш заработок:") + getDollarsString(addToBalance));
+    } else {
+         messageForUser.setText(tr("К сожалению, Вы ничего не заработали. Не отчаивайтесь! Совершите сделку!"));
     }
+    messageForUser.show();
 }
 
 void MainWindow::onNoDealsOnExpirationTime()
 {
-    qDebug() << "there is need more deals!!!";
+    messageForUser.setText(tr("Вы не заключили ни одной сделки. Очень жаль. Вы могли бы заработать ") +
+                           getDollarsString(priceOfDealCombo->currentText().toInt() * 100 * 1.8));
+    messageForUser.show();
 }

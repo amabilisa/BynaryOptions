@@ -28,14 +28,16 @@ SOURCES += \
         mainwindow.cpp \
     chartdatalocalservice.cpp \
     dealsprovider.cpp \
-    tools.cpp
+    tools.cpp \
+    binaryoptionsmessagebox.cpp
 
 HEADERS += \
         mainwindow.h \
     chartdatalocalservice.h \
     abstractchartdataservice.h \
     dealsprovider.h \
-    tools.h
+    tools.h \
+    binaryoptionsmessagebox.h
 
 FORMS +=
 
