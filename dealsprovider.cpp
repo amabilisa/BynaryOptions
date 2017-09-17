@@ -9,12 +9,12 @@ DealsProvider::DealsProvider(MainWindow *mainWindow, QObject *parent) : QObject(
 {
     _expirationTimeFrame = 60 /*seconds*/;
 
-    _settings = new QSettings("bynarysettingsconfig1.conf", QSettings::NativeFormat);
+    _settings = new QSettings("bynary_options_settings12345.conf", QSettings::NativeFormat);
 
-    if (_settings->value("balance/current_balance", -1).toDouble() < 0) {
-        this->setBalance(1000 * 100);
+    if (_settings->value("balance/current_balance", -1).toInt() < 0) {
+        _balance = 1000 * 100;
     } else {
-        this->setBalance(_settings->value("balance/current_balance").toInt());
+        _balance = _settings->value("balance/current_balance").toInt();
     }
 
     _oneExpirationIntervalTimer = new QTimer();
@@ -72,8 +72,18 @@ double DealsProvider::getBalance() const
 void DealsProvider::setBalance(const double &balance)
 {
     _balance = balance;
-    _settings->setValue("balance/current_balance", this->getBalance());
+    _settings->setValue("balance/current_balance", balance);
     _settings->sync();
+}
+
+QMap<QDateTime, Deal *> DealsProvider::getActiveDeals() const
+{
+    return _activeDeals;
+}
+
+QMap<QDateTime, Deal *> DealsProvider::getHystoryOfDeals() const
+{
+    return _hystoryOfDeals;
 }
 
 void DealsProvider::checkActiveDeals()
@@ -94,21 +104,31 @@ void DealsProvider::checkActiveDeals()
             switch (deal->_dealType) {
             case DealUp:
                 if (lastChartValue > deal->_quote) {
-                    deal->_won = deal->_price * 1.8;
+                    deal->_won = deal->_price;
+                    moneyWon += deal->_won;
+                } else {
+                    deal->_won = 0;
                 }
+
+                _hystoryOfDeals.insert(dealTime, deal);
+                _activeDeals.remove(dealTime);
                 break;
             case DealDown:
                 if (lastChartValue < deal->_quote) {
-                    deal->_won = deal->_price * 1.8;
+                    deal->_won = deal->_price;
+                    moneyWon += deal->_won;
+                } else {
+                    deal->_won = 0;
                 }
+
+                _hystoryOfDeals.insert(dealTime, deal);
+                _activeDeals.remove(dealTime);
                 break;
 
             }
 
-            moneyWon += deal->_won;
 
-            _hystoryOfDeals.insert(dealTime, deal);
-            _activeDeals.remove(dealTime);
+
 
 //            qDebug() << "deals:" << dealTime << _hystoryOfDeals.count() << _activeDeals.count();
         }
@@ -119,10 +139,10 @@ void DealsProvider::checkActiveDeals()
          emit needChangeBalance(moneyWon);
     } else {
         if (_activeDeals.isEmpty()) {
-            qDebug() << "!!!!!!!needMoreDeals!!!!!";
+//            qDebug() << "!!!!!!!needMoreDeals!!!!!";
             emit needMoreDeals();
         } else {
-            qDebug() << "------needChangeBalance(0)-----" << _activeDeals.count();
+//            qDebug() << "------needChangeBalance(0)-----" << _activeDeals.count();
             emit needChangeBalance(0);
         }
     }

@@ -39,6 +39,10 @@ public:
     double getBalance() const;
     void setBalance(const double &getBalance);
 
+    QMap<QDateTime, Deal *> getActiveDeals() const;
+
+    QMap<QDateTime, Deal *> getHystoryOfDeals() const;
+
 signals:
     void needChangeBalance(int money);
     void needMoreDeals();

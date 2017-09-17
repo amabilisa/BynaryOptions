@@ -25,6 +25,7 @@
 QT_CHARTS_USE_NAMESPACE
 
 #define SECONDS_TO_SHOW_ON_PLOT 180
+#define WIN_MULTIPLAYER 1.8
 
 class MainWindow : public QMainWindow
 {
@@ -52,6 +53,9 @@ private:
     QComboBox *priceOfDealCombo;
     QPushButton *dealUpButton;
     QPushButton *dealDownButton;
+
+    QPushButton *showDealsHistoryButton;
+    QLabel *countOfActiveDealsLabel;
 
     BinaryOptionsMessageBox messageForUser;
     QWidget *mainWidget;

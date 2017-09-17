@@ -46,14 +46,9 @@ MainWindow::MainWindow(QWidget *parent) :
     chartView->setContentsMargins(0, 0, 0, 0);
     chartView->setRenderHint(QPainter::Antialiasing);
 
+    //service of getting data to chart
     chartDataModel = new ChartDataLocalService(100, 30);
-    chartDataModel->srartRequestData(); //перенести в swov event
-
-    dealUpButton = new QPushButton("выше");
-    dealUpButton->setObjectName("dealUpButton");
-
-    dealDownButton = new QPushButton("ниже");
-    dealDownButton->setObjectName("dealDownButton");    
+    chartDataModel->srartRequestData(); //перенести в swov event 
 
     QLabel *nameOfBalanceLabel = new QLabel(tr("Счёт:"));
 
@@ -93,11 +88,28 @@ MainWindow::MainWindow(QWidget *parent) :
     priceOfDealLO->addWidget(priceOfDealCombo);
     priceOfDealLO->addStretch();
 
+    QLabel *nameCountDeals = new QLabel(tr("Активных сделок:"));
+    countOfActiveDealsLabel = new QLabel ("0");
+    countOfActiveDealsLabel->setObjectName("countOfActiveDealsLabel");
+
+    QHBoxLayout *activeDealsLO = new QHBoxLayout;
+
+    activeDealsLO->addWidget(nameCountDeals);
+    activeDealsLO->addWidget(countOfActiveDealsLabel);
+
+
+    dealUpButton = new QPushButton("выше");
+    dealUpButton->setObjectName("dealUpButton");
+
+    dealDownButton = new QPushButton("ниже");
+    dealDownButton->setObjectName("dealDownButton");
+
     QVBoxLayout *rightMenuLO = new QVBoxLayout;
 
     rightMenuLO->addLayout(balanceLabelsLO);
     rightMenuLO->addLayout(priceOfDealLO);
     rightMenuLO->addStretch();
+    rightMenuLO->addLayout(activeDealsLO);
     rightMenuLO->addWidget(dealUpButton);
     rightMenuLO->addWidget(dealDownButton);
     rightMenuLO->setContentsMargins(0, 13, 33, 38);
@@ -160,20 +172,23 @@ void MainWindow::onTakeNewValue(double data, QDateTime dateTime)
 
 void MainWindow::onGetDealUp()
 {
-    int price = priceOfDealCombo->currentText().toInt() * 100;
-    dealsProvider->setBalance(dealsProvider->getBalance() - price);
-    dealsProvider->addDeal(QDateTime::currentDateTime(), new Deal(_currentData, price, DealUp));
+    int price = priceOfDealCombo->currentText().toInt();
+    dealsProvider->setBalance(dealsProvider->getBalance() - price * 100);
+    dealsProvider->addDeal(QDateTime::currentDateTime(), new Deal(_currentData, price * 100 * WIN_MULTIPLAYER, DealUp));
+    countOfActiveDealsLabel->setText(QString::number(dealsProvider->getActiveDeals().count()));
 }
 
 void MainWindow::onGetDealDown()
 {
-    int price = priceOfDealCombo->currentText().toInt() * 100;
-    dealsProvider->setBalance(dealsProvider->getBalance() - price);
-    dealsProvider->addDeal(QDateTime::currentDateTime(), new Deal(_currentData, price, DealDown));
+    int price = priceOfDealCombo->currentText().toInt();
+    dealsProvider->setBalance(dealsProvider->getBalance() - price * 100);
+    dealsProvider->addDeal(QDateTime::currentDateTime(), new Deal(_currentData, price * 100 * WIN_MULTIPLAYER, DealDown));
+    countOfActiveDealsLabel->setText(QString::number(dealsProvider->getActiveDeals().count()));
 }
 
 void MainWindow::onChangeBalance(int addToBalance)
 {
+    countOfActiveDealsLabel->setText(QString::number(dealsProvider->getActiveDeals().count()));
     if (addToBalance > 0) {
         balanceLabel->setText(getDollarsString(dealsProvider->getBalance()));
         messageForUser.setText(tr("Ваш заработок:") + getDollarsString(addToBalance));
@@ -185,7 +200,8 @@ void MainWindow::onChangeBalance(int addToBalance)
 
 void MainWindow::onNoDealsOnExpirationTime()
 {
+    countOfActiveDealsLabel->setText(QString::number(dealsProvider->getActiveDeals().count()));
     messageForUser.setText(tr("Вы не заключили ни одной сделки. Очень жаль. Вы могли бы заработать ") +
-                           getDollarsString(priceOfDealCombo->currentText().toInt() * 100 * 1.8));
+                           getDollarsString(priceOfDealCombo->currentText().toInt() * 100 * WIN_MULTIPLAYER));
     messageForUser.show();
 }

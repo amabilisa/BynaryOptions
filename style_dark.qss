@@ -24,6 +24,12 @@ QWidget {
 	text-align: right;
 }
 
+#countOfActiveDealsLabel {
+	color: #3eac6d;
+	font-size: 20px;
+	text-align: right;
+}
+
 QComboBox, QComboBox:editable {
 	text-align: right;
 	font-size: 18px;
