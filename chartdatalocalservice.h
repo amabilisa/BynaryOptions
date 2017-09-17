@@ -10,7 +10,7 @@ class ChartDataLocalService: public AbstractChartDataService
 {
     Q_OBJECT
 public:
-    ChartDataLocalService(int startValue, int deviation);
+    ChartDataLocalService (int startValue, int deviation);
 
     //genarator timer start
     void srartRequestData();

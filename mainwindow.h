@@ -17,7 +17,6 @@
 #include <QLineEdit>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <QSettings>
 
 #include "chartdatalocalservice.h"
 #include "dealsprovider.h"
@@ -34,9 +33,9 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-private:
-    QSettings *settings;
+    AbstractChartDataService *getChartDataModel() const;
 
+private:
     QChart *chart;
     QDateTimeAxis *axisX;
     QValueAxis *axisY;
@@ -50,9 +49,15 @@ private:
     QPushButton *dealUpButton;
     QPushButton *dealDownButton;
 
+    double _currentData;
+
 
 private slots:
     void onTakeNewValue(double data, QDateTime dateTime);
+    void onGetDealUp();
+    void onGetDealDown();
+    void onChangeBalance(int addToBalance);
+    void onNoDealsOnExpirationTime();
 };
 
 #endif // MAINWINDOW_H

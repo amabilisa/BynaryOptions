@@ -32,5 +32,5 @@ void fixComboBoxDropDownListSizeAdjustment(QComboBox *cb)
 
 QString getDollarsString(double value)
 {
-    return QString(QString::number(value) + "$");
+    return QString(QString::number(value / 100) + "$");
 }

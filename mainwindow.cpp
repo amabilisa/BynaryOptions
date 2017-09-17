@@ -10,12 +10,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     setObjectName("mainWindow");
 
+    dealsProvider = new DealsProvider(this);
 
-
-    dealsProvider = new DealsProvider;
-
-    settings = new QSettings("settings.conf", QSettings::NativeFormat);
-    dealsProvider->setBalance(settings->value("balance/current_balance").toDouble());
+    dealsProvider->setExpirationTimeFrame(10);
 
     series = new QLineSeries();
 
@@ -98,7 +95,7 @@ MainWindow::MainWindow(QWidget *parent) :
     rightMenuLO->addWidget(dealUpButton);
     rightMenuLO->addWidget(dealDownButton);
     rightMenuLO->setContentsMargins(0, 13, 33, 38);
-    rightMenuLO->setSpacing(15);
+    rightMenuLO->setSpacing(13);
 
     QHBoxLayout *mainLO = new QHBoxLayout;
     QWidget *mainWidget =  new QWidget;
@@ -112,35 +109,64 @@ MainWindow::MainWindow(QWidget *parent) :
     mainWidget->setLayout(mainLO);
 
     this->setCentralWidget(mainWidget);
-    resize(900, 600);
+    resize(1000, 600);
 
     connect(chartDataModel, SIGNAL(haveNewData(double,QDateTime)), this, SLOT(onTakeNewValue(double,QDateTime)));
+    connect(dealUpButton, SIGNAL(clicked()), this, SLOT(onGetDealUp()));
+    connect(dealDownButton, SIGNAL(clicked()), this, SLOT(onGetDealDown()));
+    connect(dealsProvider, SIGNAL(needChangeBalance(int)), this, SLOT(onChangeBalance(int)));
+    connect(dealsProvider, SIGNAL(needMoreDeals()), this, SLOT(onNoDealsOnExpirationTime()));
 }
 
 MainWindow::~MainWindow()
 {
     delete dealsProvider;
-    delete settings;
     delete series;
     delete chartDataModel;
+}
+
+AbstractChartDataService *MainWindow::getChartDataModel() const
+{
+    return chartDataModel;
 }
 
 void MainWindow::onTakeNewValue(double data, QDateTime dateTime)
 {
 
-//    qDebug() << "onTakeNewValue" << data << dateTime << dateTime.toMSecsSinceEpoch();
+    _currentData = data;
 
     series->append(dateTime.toMSecsSinceEpoch(), data);
     axisX->setRange(dateTime, dateTime.addSecs(SECONDS_TO_SHOW_ON_PLOT));
     axisY->setRange(chartDataModel->getDataMinimum(), chartDataModel->getDataMaximum());
-    qreal x = chart->plotArea().width() / 2;
+    qreal x = chart->plotArea().width() * 0.785;
 
-    dealsProvider->setBalance(dealsProvider->getBalance() + data);
-    settings->setValue("balance/current_balance", dealsProvider->getBalance());
-    settings->sync();
     balanceLabel->setText(getDollarsString(dealsProvider->getBalance()));
 
-    qDebug() << "current balance:" << settings->value("balance/current_balance").toDouble();
-
     chart->scroll(-x, 0);
+}
+
+void MainWindow::onGetDealUp()
+{
+    int price = priceOfDealCombo->currentText().split("$").first().toInt() * 100;
+    dealsProvider->setBalance(dealsProvider->getBalance() - price);
+    dealsProvider->addDeal(QDateTime::currentDateTime(), new Deal(_currentData, price, DealUp));
+}
+
+void MainWindow::onGetDealDown()
+{
+    int price = priceOfDealCombo->currentText().split("$").first().toInt() * 100;
+    dealsProvider->setBalance(dealsProvider->getBalance() - price);
+    dealsProvider->addDeal(QDateTime::currentDateTime(), new Deal(_currentData, price, DealDown));
+}
+
+void MainWindow::onChangeBalance(int addToBalance)
+{
+    if (addToBalance > 0) {
+        balanceLabel->setText(getDollarsString(dealsProvider->getBalance()));
+    }
+}
+
+void MainWindow::onNoDealsOnExpirationTime()
+{
+    qDebug() << "there is need more deals!!!";
 }

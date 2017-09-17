@@ -69,8 +69,24 @@ QPushButton {
 	width: 120px;
 }
 
+#dealUpButton:hover {
+	background-color: #4ace82;
+} 
+
+#dealUpButton:pressed {
+	background-color: #2e8252;
+} 
+
 #dealDownButton {
-	background-color: #c64743/*db403b*/;
+	background-color: #c64743;
 	height: 60px;
 	width: 120px;
+}
+
+#dealDownButton:hover {
+	background-color: #ed5e5a;
+}
+
+#dealDownButton:pressed {
+	background-color: #b73b37;
 }

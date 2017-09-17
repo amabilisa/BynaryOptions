@@ -2,6 +2,12 @@
 #define DEALSPROVIDER_H
 
 #include <QObject>
+#include <QDateTime>
+#include <QtCore>
+#include <QTimer>
+#include <QSettings>
+
+class MainWindow;
 
 enum DealType {
     DealUp,
@@ -9,33 +15,49 @@ enum DealType {
 };
 
 struct Deal {
-    double quote;
-    int price;
-    DealType dealType;
+    Deal(double quote, int price, DealType dealType):
+        _quote(quote), _price(price), _dealType(dealType) {}
+    double _quote;
+    int _price;
+    int _won;
+    QDateTime _expirationTime;
+    DealType _dealType;
 };
 
 class DealsProvider : public QObject
 {
     Q_OBJECT
 public:
-    explicit DealsProvider(QObject *parent = nullptr);
+    explicit DealsProvider(MainWindow *mainWindow, QObject *parent = nullptr);
+    ~DealsProvider();
 
-    int expirationTime() const;
-    void setExpirationTime(int expirationTime);
+    int expirationTimeFrame() const;
+    void setExpirationTimeFrame(int expirationTimeFrame);
 
-    void addDeal(Deal deal);
+    void addDeal(QDateTime dateTimeOFDeal, Deal *deal);
 
     double getBalance() const;
     void setBalance(const double &getBalance);
 
 signals:
-
-public slots:
+    void needChangeBalance(int money);
+    void needMoreDeals();
 
 private:
+
+    QSettings *_settings;
+
     double _balance;
-    int _expirationTime;
-    QList <Deal> _deals;
+    int _expirationTimeFrame;
+
+    QTimer *_oneExpirationIntervalTimer; // per one expiration time timer
+    MainWindow *_mainWindow;
+
+    QMap <QDateTime, Deal*> _activeDeals;
+    QMap <QDateTime, Deal*> _hystoryOfDeals;
+
+private slots:
+    void checkActiveDeals();
 
 };
 
