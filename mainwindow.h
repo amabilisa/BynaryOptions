@@ -21,11 +21,12 @@
 #include "chartdatalocalservice.h"
 #include "dealsprovider.h"
 #include "binaryoptionsmessagebox.h"
+#include "historywidget.h"
 
 QT_CHARTS_USE_NAMESPACE
 
 #define SECONDS_TO_SHOW_ON_PLOT 180
-#define WIN_MULTIPLAYER 1.8
+
 
 class MainWindow : public QMainWindow
 {
@@ -59,6 +60,7 @@ private:
 
     BinaryOptionsMessageBox messageForUser;
     QWidget *mainWidget;
+    HistoryWidget *historyWidget;
 
     double _currentData;
 
@@ -69,6 +71,7 @@ private slots:
     void onGetDealDown();
     void onChangeBalance(int addToBalance);
     void onNoDealsOnExpirationTime();
+    void onOpenHistoryButton();
 };
 
 #endif // MAINWINDOW_H

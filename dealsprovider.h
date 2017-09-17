@@ -7,6 +7,8 @@
 #include <QTimer>
 #include <QSettings>
 
+#define WIN_MULTIPLAYER 1.8
+
 class MainWindow;
 
 enum DealType {

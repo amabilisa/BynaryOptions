@@ -9,7 +9,7 @@ DealsProvider::DealsProvider(MainWindow *mainWindow, QObject *parent) : QObject(
 {
     _expirationTimeFrame = 60 /*seconds*/;
 
-    _settings = new QSettings("bynary_options_settings12345.conf", QSettings::NativeFormat);
+    _settings = new QSettings("bynary_options_settings44.conf", QSettings::NativeFormat);
 
     if (_settings->value("balance/current_balance", -1).toInt() < 0) {
         _balance = 1000 * 100;
@@ -101,34 +101,24 @@ void DealsProvider::checkActiveDeals()
         Deal *deal = _activeDeals.value(dealTime);
         if (abs(deal->_expirationTime.secsTo(QDateTime::currentDateTime())) < 1) {
 
-            switch (deal->_dealType) {
-            case DealUp:
+            if (deal->_dealType == DealUp) {
                 if (lastChartValue > deal->_quote) {
-                    deal->_won = deal->_price;
+                    deal->_won = deal->_price  * 100 * WIN_MULTIPLAYER;
                     moneyWon += deal->_won;
                 } else {
                     deal->_won = 0;
                 }
-
-                _hystoryOfDeals.insert(dealTime, deal);
-                _activeDeals.remove(dealTime);
-                break;
-            case DealDown:
-                if (lastChartValue < deal->_quote) {
-                    deal->_won = deal->_price;
-                    moneyWon += deal->_won;
-                } else {
-                    deal->_won = 0;
-                }
-
-                _hystoryOfDeals.insert(dealTime, deal);
-                _activeDeals.remove(dealTime);
-                break;
-
             }
-
-
-
+            if (deal->_dealType == DealDown) {
+                if (lastChartValue < deal->_quote) {
+                    deal->_won = deal->_price  * 100 * WIN_MULTIPLAYER;
+                    moneyWon += deal->_won;
+                } else {
+                    deal->_won = 0;
+                }
+            }
+            _hystoryOfDeals.insert(dealTime, deal);
+            _activeDeals.remove(dealTime);
 
 //            qDebug() << "deals:" << dealTime << _hystoryOfDeals.count() << _activeDeals.count();
         }
@@ -138,7 +128,7 @@ void DealsProvider::checkActiveDeals()
         this->setBalance(_balance += moneyWon);
          emit needChangeBalance(moneyWon);
     } else {
-        if (_activeDeals.isEmpty()) {
+        if (_activeDeals.isEmpty() && _hystoryOfDeals.isEmpty()) {
 //            qDebug() << "!!!!!!!needMoreDeals!!!!!";
             emit needMoreDeals();
         } else {

@@ -102,3 +102,26 @@ QPushButton {
 #dealDownButton:pressed {
 	background-color: #b73b37;
 }
+
+QListView {
+    show-decoration-selected: 1; /* make the selection span the entire width of the view */
+}
+
+QListView::item {
+    min-height: 20px;
+    border: none;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+
+QListView::item:alternate {
+    background: #3a3a3f;
+}
+
+QListView::text {
+    left: 10px;
+}
+
+QListView::item:selected {
+    background-color: #3eac6d;
+}

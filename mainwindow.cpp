@@ -97,6 +97,8 @@ MainWindow::MainWindow(QWidget *parent) :
     activeDealsLO->addWidget(nameCountDeals);
     activeDealsLO->addWidget(countOfActiveDealsLabel);
 
+    showDealsHistoryButton = new QPushButton(tr("История (0)"));
+    showDealsHistoryButton->setObjectName("showDealsHistoryButton");
 
     dealUpButton = new QPushButton("выше");
     dealUpButton->setObjectName("dealUpButton");
@@ -110,6 +112,8 @@ MainWindow::MainWindow(QWidget *parent) :
     rightMenuLO->addLayout(priceOfDealLO);
     rightMenuLO->addStretch();
     rightMenuLO->addLayout(activeDealsLO);
+    rightMenuLO->addWidget(showDealsHistoryButton);
+    rightMenuLO->addStretch();
     rightMenuLO->addWidget(dealUpButton);
     rightMenuLO->addWidget(dealDownButton);
     rightMenuLO->setContentsMargins(0, 13, 33, 38);
@@ -129,11 +133,15 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setCentralWidget(mainWidget);
     resize(1000, 600);
 
+    historyWidget = new HistoryWidget(this);
+
+
     connect(chartDataModel, SIGNAL(haveNewData(double,QDateTime)), this, SLOT(onTakeNewValue(double,QDateTime)));
     connect(dealUpButton, SIGNAL(clicked()), this, SLOT(onGetDealUp()));
     connect(dealDownButton, SIGNAL(clicked()), this, SLOT(onGetDealDown()));
     connect(dealsProvider, SIGNAL(needChangeBalance(int)), this, SLOT(onChangeBalance(int)));
     connect(dealsProvider, SIGNAL(needMoreDeals()), this, SLOT(onNoDealsOnExpirationTime()));
+    connect(showDealsHistoryButton, SIGNAL(clicked()), this, SLOT(onOpenHistoryButton()));
 }
 
 MainWindow::~MainWindow()
@@ -173,22 +181,36 @@ void MainWindow::onTakeNewValue(double data, QDateTime dateTime)
 void MainWindow::onGetDealUp()
 {
     int price = priceOfDealCombo->currentText().toInt();
-    dealsProvider->setBalance(dealsProvider->getBalance() - price * 100);
-    dealsProvider->addDeal(QDateTime::currentDateTime(), new Deal(_currentData, price * 100 * WIN_MULTIPLAYER, DealUp));
-    countOfActiveDealsLabel->setText(QString::number(dealsProvider->getActiveDeals().count()));
+
+    if ((dealsProvider->getBalance() - price * 100) > 0) {
+        dealsProvider->setBalance(dealsProvider->getBalance() - price * 100);
+        dealsProvider->addDeal(QDateTime::currentDateTime(), new Deal(_currentData, price, DealUp));
+        countOfActiveDealsLabel->setText(QString::number(dealsProvider->getActiveDeals().count()));
+    } else {
+        messageForUser.setText(tr("Недостаточно средств для совершения сделки!"));
+        messageForUser.show();
+    }
 }
 
 void MainWindow::onGetDealDown()
 {
     int price = priceOfDealCombo->currentText().toInt();
-    dealsProvider->setBalance(dealsProvider->getBalance() - price * 100);
-    dealsProvider->addDeal(QDateTime::currentDateTime(), new Deal(_currentData, price * 100 * WIN_MULTIPLAYER, DealDown));
-    countOfActiveDealsLabel->setText(QString::number(dealsProvider->getActiveDeals().count()));
+    if ((dealsProvider->getBalance() - price * 100) > 0) {
+        dealsProvider->setBalance(dealsProvider->getBalance() - price * 100);
+        dealsProvider->addDeal(QDateTime::currentDateTime(), new Deal(_currentData, price, DealDown));
+        countOfActiveDealsLabel->setText(QString::number(dealsProvider->getActiveDeals().count()));
+    } else {
+        messageForUser.setText(tr("Недостаточно средств для совершения сделки!"));
+        messageForUser.show();
+    }
 }
 
 void MainWindow::onChangeBalance(int addToBalance)
 {
     countOfActiveDealsLabel->setText(QString::number(dealsProvider->getActiveDeals().count()));
+
+    showDealsHistoryButton->setText(tr("История (") +
+                                    QString::number(dealsProvider->getHystoryOfDeals().count()) + ")");
     if (addToBalance > 0) {
         balanceLabel->setText(getDollarsString(dealsProvider->getBalance()));
         messageForUser.setText(tr("Ваш заработок:") + getDollarsString(addToBalance));
@@ -202,6 +224,12 @@ void MainWindow::onNoDealsOnExpirationTime()
 {
     countOfActiveDealsLabel->setText(QString::number(dealsProvider->getActiveDeals().count()));
     messageForUser.setText(tr("Вы не заключили ни одной сделки. Очень жаль. Вы могли бы заработать ") +
-                           getDollarsString(priceOfDealCombo->currentText().toInt() * 100 * WIN_MULTIPLAYER));
+                           getDollarsString(priceOfDealCombo->currentText().toInt() * 100 * 1.8));
     messageForUser.show();
+}
+
+void MainWindow::onOpenHistoryButton()
+{
+    historyWidget->setHistory(dealsProvider->getHystoryOfDeals());
+    historyWidget->show();
 }

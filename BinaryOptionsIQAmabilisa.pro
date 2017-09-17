@@ -29,7 +29,8 @@ SOURCES += \
     chartdatalocalservice.cpp \
     dealsprovider.cpp \
     tools.cpp \
-    binaryoptionsmessagebox.cpp
+    binaryoptionsmessagebox.cpp \
+    historywidget.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -37,7 +38,8 @@ HEADERS += \
     abstractchartdataservice.h \
     dealsprovider.h \
     tools.h \
-    binaryoptionsmessagebox.h
+    binaryoptionsmessagebox.h \
+    historywidget.h
 
 FORMS +=
 

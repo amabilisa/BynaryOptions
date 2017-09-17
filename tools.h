@@ -7,6 +7,6 @@ class QComboBox;
 
 void fixComboBoxDropDownListSizeAdjustment(QComboBox *cb);
 
-QString getDollarsString (double value);
+QString getDollarsString (int value);
 
 #endif // TOOLS_H
