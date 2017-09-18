@@ -9,7 +9,7 @@ DealsProvider::DealsProvider(MainWindow *mainWindow, QObject *parent) : QObject(
 {
     _expirationTimeFrame = 60 /*seconds*/;
 
-    _settings = new QSettings("bynary_options_settings44.conf", QSettings::NativeFormat);
+    _settings = new QSettings("bynary_options_settings.conf", QSettings::NativeFormat);
 
     if (_settings->value("balance/current_balance", -1).toInt() < 0) {
         _balance = 1000 * 100;

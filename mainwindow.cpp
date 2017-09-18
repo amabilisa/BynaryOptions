@@ -18,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     dealsProvider = new DealsProvider(this);
 
-    dealsProvider->setExpirationTimeFrame(10);
+    dealsProvider->setExpirationTimeFrame(60);
 
     series = new QLineSeries();
 
